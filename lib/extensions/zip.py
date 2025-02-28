@@ -25,13 +25,14 @@ from .base import InkstitchExtension
 from .png_simple import generate_png
 from .thread_list import get_threadlist
 
+import shutil
+
 
 class Zip(InkstitchExtension):
     def __init__(self, *args, **kwargs):
         InkstitchExtension.__init__(self)
 
-        self.arg_parser.add_argument('--notebook')
-        self.arg_parser.add_argument('--custom-file-name', type=str, default='', dest='custom_file_name')
+        self.arg_parser.add_argument("--custom-path", type=str, default=None, dest="custom_path")
 
         # it's kind of obnoxious that I have to do this...
         self.formats = []
@@ -92,6 +93,9 @@ class Zip(InkstitchExtension):
         # to the destination file that the user chose
         with open(temp_file.name, 'rb') as output_file:
             sys.stdout.buffer.write(output_file.read())
+
+        if self.options.custom_path:
+            shutil.copy(temp_file.name, self.options.custom_path + "/" + base_file_name + ".zip")
 
         os.remove(temp_file.name)
         for file in files:
